@@ -1,0 +1,10 @@
+services:
+  rust_devcontainer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    tty: true
+    volumes:
+      - ../:/workspace
+    working_dir: /workspace

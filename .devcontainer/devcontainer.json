@@ -1,0 +1,22 @@
+{
+  "dockerComposeFile": [
+    "docker-compose.yml"
+  ],
+  "service": "rust-expo-push-notification-api",
+  "workspaceFolder": "/workspace",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "bungcip.better-toml",
+        "GitHub.copilot",
+        "ms-azuretools.vscode-docker",
+        "rust-lang.rust-analyzer"
+      ],
+      "settings": {
+        "files.watcherExclude": {
+          "**/target/**": true
+        }
+      }
+    }
+  }
+}
