@@ -1,6 +1,6 @@
 {
   "dockerComposeFile": [
-    "docker-compose.yml"
+    "compose.yml"
   ],
   "service": "rust-expo-push-notification-api",
   "workspaceFolder": "/workspace",
