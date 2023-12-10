@@ -1,16 +1,18 @@
 use axum::{
     body::Body,
-    response::Html,
+    extract,
+    response::{self, Html},
     routing::{get, post},
     Router,
 };
+use serde::{Deserialize, Serialize};
 
 #[tokio::main]
 async fn main() {
     // Build our application with routes for both GET and POST
     let app = Router::new()
         .route("/", get(handler_get))
-        .route("/submit", post(handler_post));
+        .route("/submit", post(ping));
 
     // Run it
     let listener = tokio::net::TcpListener::bind("127.0.0.1:3000")
@@ -24,6 +26,19 @@ async fn handler_get() -> Html<&'static str> {
     Html(include_str!("./static/index.html"))
 }
 
-async fn handler_post(body: Body) -> &'static str {
-    "Hello, World! (POST)"
+#[derive(Deserialize)]
+struct Ping {
+    count: i64,
+}
+
+#[derive(Serialize)]
+struct Pong {
+    count: i64,
+}
+
+async fn ping(extract::Json(ping): extract::Json<Ping>) -> response::Json<Pong> {
+    println!("Ping: {}", ping.count);
+    response::Json(Pong {
+        count: ping.count + 1,
+    })
 }
