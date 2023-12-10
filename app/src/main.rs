@@ -10,6 +10,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::json;
 use tokio;
 use tower_http::cors::{Any, CorsLayer};
+mod module;
 
 #[tokio::main]
 async fn main() -> Result<(), StatusCode> {
@@ -78,7 +79,6 @@ async fn push_message(
         .expect("Failed to send request");
 
     println!("{:?}", response.text().await.unwrap());
-    module::expo_api::add();
 
     Ok(response::Json(Response { success: true }))
 }
