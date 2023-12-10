@@ -1,31 +1,29 @@
-use reqwest::header::{HeaderMap, HeaderValue, CONTENT_TYPE};
-use serde_json::json;
-use tokio;
+use axum::{
+    body::Body,
+    response::Html,
+    routing::{get, post},
+    Router,
+};
 
 #[tokio::main]
-async fn main() -> Result<(), reqwest::Error> {
-    let url = "https://exp.host/--/api/v2/push/send";
-    let expo_token = "ExponentPushToken[TOWNJ5LmG02dzppStD58kK]";
+async fn main() {
+    // Build our application with routes for both GET and POST
+    let app = Router::new()
+        .route("/", get(handler_get))
+        .route("/submit", post(handler_post));
 
-    let mut headers = HeaderMap::new();
-    headers.insert(CONTENT_TYPE, HeaderValue::from_static("application/json"));
+    // Run it
+    let listener = tokio::net::TcpListener::bind("127.0.0.1:3000")
+        .await
+        .unwrap();
+    println!("Listening on: {}", listener.local_addr().unwrap());
+    axum::serve(listener, app).await.unwrap();
+}
 
-    let client = reqwest::Client::new();
+async fn handler_get() -> Html<&'static str> {
+    Html(include_str!("./static/index.html"))
+}
 
-    let payload = json!({
-        "to": expo_token,
-        "title": "hello",
-        "body": "rust",
-    });
-
-    let response = client
-        .post(url)
-        .headers(headers)
-        .json(&payload)
-        .send()
-        .await?;
-
-    println!("{:?}", response.text().await?);
-
-    Ok(())
+async fn handler_post(body: Body) -> &'static str {
+    "Hello, World! (POST)"
 }
