@@ -1,5 +1,4 @@
 use axum::{
-    body::Body,
     extract,
     response::{self, Html},
     routing::{get, post},
@@ -26,19 +25,19 @@ async fn handler_get() -> Html<&'static str> {
     Html(include_str!("./static/index.html"))
 }
 
-#[derive(Deserialize)]
-struct Ping {
-    count: i64,
+#[derive(Deserialize, Debug)]
+struct Args {
+    expo_push_token: String,
+    title: String,
+    body: String,
 }
 
 #[derive(Serialize)]
-struct Pong {
-    count: i64,
+struct Response {
+    success: bool,
 }
 
-async fn ping(extract::Json(ping): extract::Json<Ping>) -> response::Json<Pong> {
-    println!("Ping: {}", ping.count);
-    response::Json(Pong {
-        count: ping.count + 1,
-    })
+async fn ping(extract::Json(body): extract::Json<Args>) -> response::Json<Response> {
+    println!("{:?}", body);
+    response::Json(Response { success: true })
 }
