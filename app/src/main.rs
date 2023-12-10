@@ -5,17 +5,24 @@ use axum::{
     routing::{get, post},
     Router,
 };
-use reqwest::header::{HeaderMap, HeaderValue, CONTENT_TYPE};
+use reqwest::header::{HeaderMap, HeaderValue, CONTENT_TYPE as CONTENT_TYPE_REQWEST};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use tokio;
+use tower_http::cors::{Any, CorsLayer};
 
 #[tokio::main]
 async fn main() -> Result<(), StatusCode> {
     // Build our application with routes for both GET and POST
     let app = Router::new()
         .route("/", get(handler_get))
-        .route("/submit", post(push_message));
+        .route("/submit", post(push_message))
+        .layer(
+            CorsLayer::new()
+                .allow_origin(Any)
+                .allow_methods(Any)
+                .allow_headers(Any),
+        );
 
     // Run it
     let listener = tokio::net::TcpListener::bind("127.0.0.1:3000")
@@ -50,7 +57,10 @@ async fn push_message(
     let _expo_token = "ExponentPushToken[TOWNJ5LmG02dzppStD58kK]";
 
     let mut headers = HeaderMap::new();
-    headers.insert(CONTENT_TYPE, HeaderValue::from_static("application/json"));
+    headers.insert(
+        CONTENT_TYPE_REQWEST,
+        HeaderValue::from_static("application/json"),
+    );
 
     let client = reqwest::Client::new();
 
