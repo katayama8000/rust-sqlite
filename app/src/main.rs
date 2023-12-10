@@ -1,5 +1,6 @@
 use axum::{
     extract,
+    http::StatusCode,
     response::{self, Html},
     routing::{get, post},
     Router,
@@ -10,7 +11,7 @@ use serde_json::json;
 use tokio;
 
 #[tokio::main]
-async fn main() {
+async fn main() -> Result<(), StatusCode> {
     // Build our application with routes for both GET and POST
     let app = Router::new()
         .route("/", get(handler_get))
@@ -22,6 +23,7 @@ async fn main() {
         .unwrap();
     println!("Listening on: {}", listener.local_addr().unwrap());
     axum::serve(listener, app).await.unwrap();
+    Ok(())
 }
 
 async fn handler_get() -> Html<&'static str> {
@@ -40,7 +42,9 @@ struct Response {
     success: bool,
 }
 
-async fn push_message(extract::Json(body): extract::Json<Args>) -> response::Json<Response> {
+async fn push_message(
+    extract::Json(body): extract::Json<Args>,
+) -> Result<response::Json<Response>, StatusCode> {
     println!("{:?}", body);
     let url = "https://exp.host/--/api/v2/push/send";
     let _expo_token = "ExponentPushToken[TOWNJ5LmG02dzppStD58kK]";
@@ -62,9 +66,9 @@ async fn push_message(extract::Json(body): extract::Json<Args>) -> response::Jso
         .json(&payload)
         .send()
         .await
-        .unwrap();
+        .expect("Failed to send request");
 
     println!("{:?}", response.text().await.unwrap());
 
-    response::Json(Response { success: true })
+    Ok(response::Json(Response { success: true }))
 }
