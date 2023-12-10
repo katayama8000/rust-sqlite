@@ -78,6 +78,7 @@ async fn push_message(
         .expect("Failed to send request");
 
     println!("{:?}", response.text().await.unwrap());
+    module::expo_api::add();
 
     Ok(response::Json(Response { success: true }))
 }
