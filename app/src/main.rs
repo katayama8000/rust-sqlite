@@ -13,7 +13,6 @@ use tower_http::cors::{Any, CorsLayer};
 
 #[tokio::main]
 async fn main() -> Result<(), StatusCode> {
-    // Build our application with routes for both GET and POST
     let app = Router::new()
         .route("/", get(handler_get))
         .route("/submit", post(push_message))
@@ -24,7 +23,6 @@ async fn main() -> Result<(), StatusCode> {
                 .allow_headers(Any),
         );
 
-    // Run it
     let listener = tokio::net::TcpListener::bind("127.0.0.1:3000")
         .await
         .unwrap();
@@ -34,6 +32,7 @@ async fn main() -> Result<(), StatusCode> {
 }
 
 async fn handler_get() -> Html<&'static str> {
+    println!("GET / html");
     Html(include_str!("./static/index.html"))
 }
 
@@ -52,7 +51,7 @@ struct Response {
 async fn push_message(
     extract::Json(body): extract::Json<Args>,
 ) -> Result<response::Json<Response>, StatusCode> {
-    println!("{:?}", body);
+    println!("POST/ {:?}", body);
     let url = "https://exp.host/--/api/v2/push/send";
     let _expo_token = "ExponentPushToken[TOWNJ5LmG02dzppStD58kK]";
 

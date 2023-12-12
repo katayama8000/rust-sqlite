@@ -1,24 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rust🦀</title>
-    <style>
-        .title {
-            color: #d8bb16;
-            font-size: 3rem;
-            text-align: center;
-            margin-top: 10rem;
-        }
-    </style>
-</head>
-<body>
-    <h1 class="title">this is a api for post expo-push-token</h1>
-    <button id="push">post</button>
-</body>
-<script>
-    const postData = {
+const postData = {
     expo_push_token: "ExponentPushToken[b5nR6zALafV431QtOC7byo]",
     title: "Your Title",
     body: "Your Message Body",
@@ -45,5 +25,3 @@ button.addEventListener('click', () => {
             console.error('Error:', error);
         });
 });
-</script>
-</html>
