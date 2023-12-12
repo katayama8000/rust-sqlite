@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,37 +14,39 @@
         }
     </style>
 </head>
+
 <body>
     <h1 class="title">this is a api for post expo-push-token</h1>
-    <button id="push">post</button>
+    <button id="pushId">post</button>
 </body>
 <script>
-    const postData = {
-    expo_push_token: "ExponentPushToken[b5nR6zALafV431QtOC7byo]",
-    title: "Your Title",
-    body: "Your Message Body",
-};
-const button = document.getElementById('push');
-button.addEventListener('click', () => {
-    fetch('http://127.0.0.1:3000/submit', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(postData),
-    })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            return response.json();
+    const body = {
+        expo_push_token: "ExponentPushToken[b5nR6zALafV431QtOC7byo]",
+        title: "title",
+        body: "body",
+    };
+    const button = document.getElementById('pushId');
+    button.addEventListener('click', () => {
+        fetch('http://127.0.0.1:3000/submit', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(body),
         })
-        .then(data => {
-            console.log('Success:', data);
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
-});
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Success:', data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    });
 </script>
+
 </html>
