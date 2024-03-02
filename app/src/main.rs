@@ -1,7 +1,5 @@
-use dotenv;
 use shuttle_secrets::SecretStore;
 use sqlx::sqlite::SqlitePool;
-use std::env;
 
 #[derive(Debug, Clone)]
 pub struct User {
@@ -19,12 +17,11 @@ async fn hello_world() -> &'static str {
 }
 
 async fn get_data_from_db(State(state): State<AppState>) -> String {
-    let pool = SqlitePool::connect(&state.database_url).await.unwrap();
     let users = sqlx::query_as!(
         User,
         "select id, name, email, address, created_at from users"
     )
-    .fetch_all(&pool)
+    .fetch_all(&state.pool)
     .await
     .unwrap();
     for user in users.clone() {
@@ -36,21 +33,18 @@ async fn get_data_from_db(State(state): State<AppState>) -> String {
 
 #[derive(Debug, Clone)]
 struct AppState {
-    database_url: String,
+    pool: SqlitePool,
 }
 
 #[shuttle_runtime::main]
 async fn main(#[shuttle_secrets::Secrets] secret_store: SecretStore) -> shuttle_axum::ShuttleAxum {
-    // dotenv::dotenv().expect("Failed to read .env file");
-    let val = secret_store
+    let database_url = secret_store
         .get("DATABASE_URL")
         .expect("DATABASE_URL must be set");
 
     let state = AppState {
-        database_url: val.clone(),
+        pool: SqlitePool::connect(&database_url).await.unwrap(),
     };
-
-    println!("🔥DATABASE_URL🔥: {}", val);
 
     let router = Router::new()
         .route("/", get(hello_world))
@@ -59,21 +53,3 @@ async fn main(#[shuttle_secrets::Secrets] secret_store: SecretStore) -> shuttle_
 
     Ok(router.into())
 }
-
-// #[tokio::main]
-// async fn main() -> Result<(), sqlx::Error> {
-//     dotenv::dotenv().expect("Failed to read .env file");
-//     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
-//     let pool = SqlitePool::connect(&database_url).await?;
-//     let users = sqlx::query_as!(
-//         User,
-//         "select id, name, email, address, created_at from users"
-//     )
-//     .fetch_all(&pool)
-//     .await?;
-//     for user in users {
-//         println!("{:?}", user);
-//     }
-
-//     Ok(())
-// }
