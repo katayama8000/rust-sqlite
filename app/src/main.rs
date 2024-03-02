@@ -12,15 +12,14 @@ pub struct User {
     pub created_at: chrono::NaiveDateTime,
 }
 
-use axum::{routing::get, Router};
+use axum::{extract::State, routing::get, Router};
 
 async fn hello_world() -> &'static str {
     "Hello, world!"
 }
 
-async fn get_data_from_db() -> String {
-    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
-    let pool = SqlitePool::connect(&database_url).await.unwrap();
+async fn get_data_from_db(State(state): State<AppState>) -> String {
+    let pool = SqlitePool::connect(&state.database_url).await.unwrap();
     let users = sqlx::query_as!(
         User,
         "select id, name, email, address, created_at from users"
@@ -35,16 +34,28 @@ async fn get_data_from_db() -> String {
     users[0].name.clone()
 }
 
+#[derive(Debug, Clone)]
+struct AppState {
+    database_url: String,
+}
+
 #[shuttle_runtime::main]
 async fn main(#[shuttle_secrets::Secrets] secret_store: SecretStore) -> shuttle_axum::ShuttleAxum {
-    dotenv::dotenv().expect("Failed to read .env file");
+    // dotenv::dotenv().expect("Failed to read .env file");
     let val = secret_store
         .get("DATABASE_URL")
         .expect("DATABASE_URL must be set");
 
+    let state = AppState {
+        database_url: val.clone(),
+    };
+
+    println!("🔥DATABASE_URL🔥: {}", val);
+
     let router = Router::new()
         .route("/", get(hello_world))
-        .route("/get", get(get_data_from_db));
+        .route("/get", get(get_data_from_db))
+        .with_state(state);
 
     Ok(router.into())
 }
