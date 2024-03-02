@@ -1,4 +1,4 @@
-use rust_sqlx_example::{
+use manage_money::{
     create_pool, create_user, delete_user, get_users, truncate_table, update_user,
     CreateUserRequest, UpdateUserRequest,
 };
