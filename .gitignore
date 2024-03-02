@@ -3,3 +3,4 @@
 .env
 shuttle-storage
 Secrets*.toml
+!Secrets.dist.toml
