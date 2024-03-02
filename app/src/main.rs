@@ -1,4 +1,5 @@
 use dotenv;
+use shuttle_secrets::SecretStore;
 use sqlx::sqlite::SqlitePool;
 use std::env;
 
@@ -35,8 +36,11 @@ async fn get_data_from_db() -> String {
 }
 
 #[shuttle_runtime::main]
-async fn main() -> shuttle_axum::ShuttleAxum {
+async fn main(#[shuttle_secrets::Secrets] secret_store: SecretStore) -> shuttle_axum::ShuttleAxum {
     dotenv::dotenv().expect("Failed to read .env file");
+    let val = secret_store
+        .get("DATABASE_URL")
+        .expect("DATABASE_URL must be set");
 
     let router = Router::new()
         .route("/", get(hello_world))
