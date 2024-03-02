@@ -1,8 +1,14 @@
 ## up  
-devContainerを立ち上げる
+
+run devcontainer in vscode
+
 ```bash
 cd app
 cargo run
 ```
----
-ref https://github.com/expo/expo-server-sdk-rust
+## test
+
+```bash
+cd app
+cargo test
+```

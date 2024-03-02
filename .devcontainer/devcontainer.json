@@ -2,7 +2,7 @@
   "dockerComposeFile": [
     "compose.yml"
   ],
-  "service": "rust-expo-push-notification-api",
+  "service": "api",
   "workspaceFolder": "/workspace",
   "customizations": {
     "vscode": {

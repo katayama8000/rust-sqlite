@@ -1,5 +1,5 @@
 services:
-  rust-expo-push-notification-api:
+  api:
     build:
       context: .
       dockerfile: Dockerfile

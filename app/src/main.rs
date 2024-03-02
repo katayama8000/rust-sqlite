@@ -1,35 +1,30 @@
-use axum::{
-    http::StatusCode,
-    response::Html,
-    routing::{get, post},
-    Router,
-};
+use dotenv;
+use sqlx::sqlite::SqlitePool;
+use std::env;
 
-use tokio;
-use tower_http::cors::{Any, CorsLayer};
-mod module;
-
-#[tokio::main]
-async fn main() -> Result<(), StatusCode> {
-    let app = Router::new()
-        .route("/", get(handler_get))
-        .route("/submit", post(module::expo_api::push_message))
-        .layer(
-            CorsLayer::new()
-                .allow_origin(Any)
-                .allow_methods(Any)
-                .allow_headers(Any),
-        );
-
-    let listener = tokio::net::TcpListener::bind("127.0.0.1:3000")
-        .await
-        .unwrap();
-    println!("Listening on: {}", listener.local_addr().unwrap());
-    axum::serve(listener, app).await.unwrap();
-    Ok(())
+#[derive(Debug)]
+pub struct User {
+    pub id: i64,
+    pub name: String,
+    pub email: String,
+    pub address: Option<String>,
+    pub created_at: chrono::NaiveDateTime,
 }
 
-async fn handler_get() -> Html<&'static str> {
-    println!("GET / html");
-    Html(include_str!("./static/index.html"))
+#[tokio::main]
+async fn main() -> Result<(), sqlx::Error> {
+    dotenv::dotenv().expect("Failed to read .env file");
+    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+    let pool = SqlitePool::connect(&database_url).await?;
+    let users = sqlx::query_as!(
+        User,
+        "select id, name, email, address, created_at from users"
+    )
+    .fetch_all(&pool)
+    .await?;
+    for user in users {
+        println!("{:?}", user);
+    }
+
+    Ok(())
 }
