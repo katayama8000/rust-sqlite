@@ -23,7 +23,6 @@ sqlx = { version = "0.7.3", features = [
     "runtime-tokio-native-tls",
     "chrono",
 ] }
-dotenv = "0.15.0"
 chrono = "0.4.34"
 shuttle-axum = "0.39.0"
 shuttle-runtime = "0.39.0"
