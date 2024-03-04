@@ -1,4 +1,4 @@
-use manage_money::{
+use app::{
     create_pool, create_user, delete_user, get_users, truncate_table, update_user,
     CreateUserRequest, UpdateUserRequest,
 };
