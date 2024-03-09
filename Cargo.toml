@@ -1,5 +1,5 @@
 [package]
-name = "app"
+name = "manage-money-api"
 version = "0.0.1-alpha"
 edition = "2021"
 readme = "README.md"
